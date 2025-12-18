@@ -10,6 +10,7 @@ import Login from './pages/Login'
 import Orders from './pages/Orders'
 import Placeorder from './pages/Placeorder'
 import Cart from './pages/Cart'
+import Footer from './components/Footer'
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/placeorder" element={<Placeorder />} />
         <Route path="/cart" element={<Cart />} />
       </Routes>
+      <Footer />
     </div>
   )
 }

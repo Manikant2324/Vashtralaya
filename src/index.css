@@ -31,3 +31,6 @@ a.active hr{
 .animate-zoomIn {
   animation: zoomIn 0.6s ease forwards;
 }
+::-webkit-scrollbar {
+  display:none;
+}

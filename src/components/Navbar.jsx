@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { assets } from "../assets/frontend-assests/assets";
 import { Link, NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { ShopContext } from "../context/ShopContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
+  const { setShowSearch } = useContext(ShopContext);
+
 
   useEffect(() => {
     const handleClick = (e) => {
@@ -58,6 +62,7 @@ const Navbar = () => {
             <img
               src={assets.search_icon}
               className="w-5 cursor-pointer"
+              onClick={()=> setShowSearch(true)}
               alt="search"
             />
 

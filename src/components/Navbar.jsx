@@ -8,7 +8,7 @@ const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
-  const { setShowSearch } = useContext(ShopContext);
+  const { setShowSearch, getCartCount } = useContext(ShopContext);
 
 
   useEffect(() => {
@@ -107,7 +107,7 @@ const Navbar = () => {
                 alt="cart"
               />
               <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
-                12
+                {}{getCartCount()}
               </span>
             </Link>
 

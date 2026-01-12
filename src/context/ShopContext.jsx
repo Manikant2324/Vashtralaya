@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { products } from "../assets/frontend-assests/assets";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export const ShopContext = createContext();
 
@@ -12,6 +13,7 @@ const ShopContextProvider = (props) => {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  const navigate= useNavigate();
 
   /* ================= ADD TO CART ================= */
   const addToCart = (itemId, size) => {
@@ -20,7 +22,6 @@ const ShopContextProvider = (props) => {
       return;
     }
 
-    // ✅ safe deep copy (browser support friendly)
     let cartData = JSON.parse(JSON.stringify(cartItems));
 
     if (cartData[itemId]) {
@@ -44,7 +45,6 @@ const ShopContextProvider = (props) => {
     if (quantity === 0) {
       delete cartData[itemId][size];
 
-      // agar product ke andar koi size nahi bacha
       if (Object.keys(cartData[itemId]).length === 0) {
         delete cartData[itemId];
       }
@@ -69,6 +69,30 @@ const ShopContextProvider = (props) => {
     return totalCount;
   };
 
+  /* ================= CART SUBTOTAL ================= */
+  const getCartAmount = () => {
+    let totalAmount = 0;
+
+    for (const productId in cartItems) {
+      const productData = products.find(
+        (product) => product._id === productId
+      );
+
+      for (const size in cartItems[productId]) {
+        if (cartItems[productId][size] > 0) {
+          totalAmount +=
+            productData.price * cartItems[productId][size];
+        }
+      }
+    }
+    return totalAmount;
+  };
+
+  /* ================= CART TOTAL ================= */
+  const getCartTotal = () => {
+    return getCartAmount() + delivery_fee;
+  };
+
   /* ================= DEBUG ================= */
   useEffect(() => {
     console.log("Cart Items:", cartItems);
@@ -85,7 +109,10 @@ const ShopContextProvider = (props) => {
     cartItems,
     addToCart,
     updateQuantity,
-    getCartCount
+    getCartCount,
+    getCartAmount,
+    getCartTotal,
+    navigate
   };
 
   return (

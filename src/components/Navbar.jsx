@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { assets } from "../assets/frontend-assests/assets";
 import { Link, NavLink } from "react-router-dom";
 import { useContext } from "react";
@@ -6,26 +6,12 @@ import { ShopContext } from "../context/ShopContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const profileRef = useRef(null);
   const { setShowSearch, getCartCount } = useContext(ShopContext);
-
-
-  useEffect(() => {
-    const handleClick = (e) => {
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
-        setProfileOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
 
   return (
     <>
       {/* FIXED NAVBAR */}
       <div className="fixed top-0 left-0 w-full z-50 bg-white shadow-sm">
-
         <div className="flex items-center justify-between h-20 px-6 sm:px-10">
 
           {/* LOGO */}
@@ -59,47 +45,24 @@ const Navbar = () => {
           {/* RIGHT ICONS */}
           <div className="flex items-center gap-6">
 
+            {/* SEARCH */}
             <img
               src={assets.search_icon}
               className="w-5 cursor-pointer"
-              onClick={()=> setShowSearch(true)}
+              onClick={() => setShowSearch(true)}
               alt="search"
             />
 
-            <div ref={profileRef} className="relative">
+            {/* PROFILE → DIRECT LOGIN */}
+            <Link to="/login">
               <img
                 src={assets.profile_icon}
                 className="w-5 cursor-pointer"
                 alt="profile"
-                onClick={() => setProfileOpen(!profileOpen)}
               />
+            </Link>
 
-              {profileOpen && (
-                <div className="absolute right-0 mt-4 w-44 bg-white border rounded-xl shadow-lg">
-                  <Link
-                    to="/profile"
-                    onClick={() => setProfileOpen(false)}
-                    className="block px-4 py-3 text-sm hover:bg-gray-100 rounded-t-xl"
-                  >
-                    My Profile
-                  </Link>
-                  <Link
-                    to="/orders"
-                    onClick={() => setProfileOpen(false)}
-                    className="block px-4 py-3 text-sm hover:bg-gray-100"
-                  >
-                    Orders
-                  </Link>
-                  <button
-                    onClick={() => setProfileOpen(false)}
-                    className="w-full text-left px-4 py-3 text-sm hover:bg-gray-100 rounded-b-xl"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-
+            {/* CART */}
             <Link to="/cart" className="relative">
               <img
                 src={assets.cart_icon}
@@ -107,10 +70,11 @@ const Navbar = () => {
                 alt="cart"
               />
               <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
-                {}{getCartCount()}
+                {getCartCount()}
               </span>
             </Link>
 
+            {/* MOBILE MENU ICON */}
             <img
               src={assets.menu_icon}
               onClick={() => setVisible(true)}
@@ -157,7 +121,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* SPACER SO CONTENT DOESN'T GO UNDER NAVBAR */}
+      {/* SPACER */}
       <div className="h-20"></div>
     </>
   );

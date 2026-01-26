@@ -23,7 +23,7 @@ const registerUser = async (req, res) => {
 
 
         // validating email format and strong password
-        if (!validator.isEmail) {
+        if (!validator.isEmail(email)) {
             return res.json({ success: false, message: 'please enter a valid email' });
         }
 
@@ -58,9 +58,44 @@ const registerUser = async (req, res) => {
 
 }
 
+// Route for user login
+const loginUser = async (req, res) => {
+
+    try {
+        const { email, password } = req.body;
+
+        const user = await userModel.findOne({ email });
+
+        // Check if user exists or not
+        if (!user) {
+            return res.json({ success: false, message: 'User does not exist' });
+        }
+
+        const isMatch = await bcryptjs.compare(password, user.password);
+
+
+        // if password is matched
+        if (isMatch) {
+            const token = createToken(user._id);
+            res.json({ success: true, token });
+        }
+
+        // if password is not matched
+        else {
+            res.json({ success: false, message: 'Invalid credentials' });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+
+}
+
+ 
 
 
 
 
 
-export {  registerUser};
+export {  registerUser, loginUser };

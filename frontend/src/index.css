@@ -34,3 +34,8 @@ a.active hr{
 ::-webkit-scrollbar {
   display:none;
 }
+
+
+.active hr {
+  @apply block;
+}

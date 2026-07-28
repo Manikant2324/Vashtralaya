@@ -39,6 +39,16 @@ app.use((req, res, next) => {
     next();
 });
 
+// Serverless DB Connection Middleware
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+    } catch (e) {
+        console.error('Database middleware error:', e.message);
+    }
+    next();
+});
+
 // API endpoints
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);

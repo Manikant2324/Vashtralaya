@@ -19,7 +19,7 @@ import AdminLogin from './admin/pages/AdminLogin';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Searchbar from './components/Searchbar';
+import Searchbar from './components/SearchBar';
 import AIChatAssistant from './components/AIChatAssistant';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

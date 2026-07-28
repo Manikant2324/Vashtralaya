@@ -1,6 +1,8 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const Footer = () => {
+
   return (
     <>
       <footer className="border-t mt-24">
@@ -25,17 +27,25 @@ const Footer = () => {
               COMPANY
             </p>
             <ul className="flex flex-col gap-2 text-gray-600">
-              <li className="hover:text-black cursor-pointer transition">
-                Home
+              <li>
+                <Link to="/" className="hover:text-black transition">
+                  Home
+                </Link>
               </li>
-              <li className="hover:text-black cursor-pointer transition">
-                About Us
+              <li>
+                <Link to="/collection" className="hover:text-black transition">
+                  Collection
+                </Link>
               </li>
-              <li className="hover:text-black cursor-pointer transition">
-                Delivery
+              <li>
+                <Link to="/about" className="hover:text-black transition">
+                  About Us
+                </Link>
               </li>
-              <li className="hover:text-black cursor-pointer transition">
-                Privacy Policy
+              <li>
+                <Link to="/contact" className="hover:text-black transition">
+                  Contact
+                </Link>
               </li>
             </ul>
           </div>

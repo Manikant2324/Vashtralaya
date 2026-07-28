@@ -3,6 +3,10 @@ import { useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/frontend-assests/assets";
 import RelatedProducts from "../components/RelatedProducts";
+import ProductReview from "../components/ProductReview";
+import AISizeFitAdvisor from "../components/AISizeFitAdvisor";
+import AIFrequentlyBoughtTogether from "../components/AIFrequentlyBoughtTogether";
+import { BsStars } from "react-icons/bs";
 import { toast } from "react-toastify";
 
 const Product = () => {
@@ -14,6 +18,7 @@ const Product = () => {
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
   const [activeTab, setActiveTab] = useState("description");
+  const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
 
   /* ================= GET PRODUCT ================= */
   useEffect(() => {
@@ -25,18 +30,24 @@ const Product = () => {
     }
   }, [productId, products]);
 
-  /* ================= ADD TO CART ================= */
+  if (!productData) {
+    return <div className="opacity-0"></div>;
+  }
+
+  const isInStock = productData.stock !== undefined ? productData.stock > 0 : true;
+  const avgRating = productData.rating || 0;
+
   const handleAddToCart = () => {
+    if (!isInStock) {
+      toast.error("This product is currently out of stock");
+      return;
+    }
     if (!size) {
       toast.error("Please select a size");
       return;
     }
     addToCart(productData._id, size);
   };
-
-  if (!productData) {
-    return <div className="opacity-0"></div>;
-  }
 
   return (
     <div className="border-t-2 pt-10">
@@ -52,15 +63,20 @@ const Product = () => {
               <img
                 key={index}
                 src={item}
-                alt=""
+                alt={`Product thumbnail ${index + 1}`}
                 onClick={() => setImage(item)}
-                className="w-[24%] sm:w-full cursor-pointer border"
+                className={`w-[24%] sm:w-full aspect-square object-cover object-top cursor-pointer rounded border hover:opacity-80 transition ${image === item ? 'ring-2 ring-black' : ''}`}
               />
             ))}
           </div>
 
-          <div className="w-full sm:w-[80%]">
-            <img src={image} alt="" className="w-full h-auto" />
+          <div className="w-full sm:w-[80%] relative aspect-[3/4] max-h-[600px] rounded-lg overflow-hidden bg-gray-100 border">
+            <img src={image} alt={productData.name} className="w-full h-full object-cover object-top" />
+            {!isInStock && (
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center">
+                <p className="text-white text-2xl font-bold tracking-wider">OUT OF STOCK</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -71,18 +87,31 @@ const Product = () => {
             {productData.name}
           </h1>
 
-          <div className="flex items-center gap-1 mt-2">
-            <img src={assets.star_icon} className="w-3.5" />
-            <img src={assets.star_icon} className="w-3.5" />
-            <img src={assets.star_icon} className="w-3.5" />
-            <img src={assets.star_icon} className="w-3.5" />
-            <img src={assets.star_dull_icon} className="w-3.5" />
-            <p className="pl-2 text-sm">(122)</p>
+          {/* Rating */}
+          <div className="flex items-center gap-2 mt-2">
+            <div className="flex gap-0.5">
+              {[...Array(5)].map((_, i) => (
+                <span key={i} className={i < Math.round(avgRating) ? 'text-yellow-400 text-lg' : 'text-gray-300 text-lg'}>
+                  ★
+                </span>
+              ))}
+            </div>
+            <p className="ml-2 text-sm text-gray-600">({productData.reviews?.length || 0} reviews)</p>
+            {avgRating > 0 && <p className="text-sm font-semibold">{avgRating.toFixed(1)}/5</p>}
           </div>
 
           <p className="mt-5 text-3xl font-medium">
             {currency}{productData.price}
           </p>
+
+          {/* Stock Status */}
+          <div className={`mt-2 px-3 py-1 rounded-full inline-block text-sm font-semibold ${
+            isInStock 
+              ? 'bg-green-100 text-green-800' 
+              : 'bg-red-100 text-red-800'
+          }`}>
+            {isInStock ? `In Stock (${productData.stock})` : 'Out of Stock'}
+          </div>
 
           <p className="mt-5 text-gray-500 md:w-4/5">
             {productData.description}
@@ -90,17 +119,26 @@ const Product = () => {
 
           {/* ================= SIZE ================= */}
           <div className="flex flex-col gap-4 my-8">
-            <p>Select Size</p>
+            <div className="flex items-center justify-between max-w-xs">
+              <p className="font-semibold text-gray-800">Select Size</p>
+              <button
+                type="button"
+                onClick={() => setIsSizeModalOpen(true)}
+                className="flex items-center gap-1.5 text-xs text-black font-bold bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-full border border-amber-300 shadow-2xs cursor-pointer transition"
+              >
+                <BsStars className="text-amber-600 text-sm" /> AI Size Advisor
+              </button>
+            </div>
 
             <div className="flex gap-2">
               {productData.sizes.map((item, index) => (
                 <button
                   key={index}
                   onClick={() => setSize(item)}
-                  className={`border py-2 px-4 ${
+                  className={`border py-2 px-4 rounded-md font-medium text-sm transition ${
                     size === item
-                      ? "bg-black text-white"
-                      : "bg-gray-100"
+                      ? "bg-black text-white border-black font-bold shadow-xs"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
                   {item}
@@ -109,20 +147,32 @@ const Product = () => {
             </div>
           </div>
 
+          <AISizeFitAdvisor
+            isOpen={isSizeModalOpen}
+            onClose={() => setIsSizeModalOpen(false)}
+            onSelectSize={(recommendedSize) => setSize(recommendedSize)}
+          />
+
           {/* ================= ADD TO CART ================= */}
           <button
             onClick={handleAddToCart}
-            className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
+            disabled={!isInStock}
+            className={`${
+              isInStock 
+                ? 'bg-black text-white hover:bg-gray-800' 
+                : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+            } px-8 py-3 text-sm transition`}
           >
-            ADD TO CART
+            {isInStock ? 'ADD TO CART' : 'OUT OF STOCK'}
           </button>
 
           <hr className="mt-8 sm:w-4/5" />
 
           <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
-            <p>100% Original product.</p>
-            <p>Cash on delivery available.</p>
-            <p>Easy return within 7 days.</p>
+            <p>✓ 100% Original product.</p>
+            <p>✓ Cash on delivery available.</p>
+            <p>✓ Easy return within 7 days.</p>
+            {isInStock && <p>✓ Free shipping on orders above ₹500.</p>}
           </div>
 
         </div>
@@ -147,7 +197,7 @@ const Product = () => {
               activeTab === "review" ? "bg-gray-100" : ""
             }`}
           >
-            Reviews (122)
+            Reviews ({productData.reviews?.length || 0})
           </button>
         </div>
 
@@ -164,14 +214,15 @@ const Product = () => {
               </p>
             </>
           ) : (
-            <>
-              <p>⭐️⭐️⭐️⭐️⭐️ Amazing quality product</p>
-              <p>⭐️⭐️⭐️⭐️ Worth the price</p>
-              <p>⭐️⭐️⭐️ Good but delivery was late</p>
-            </>
+            <div className="w-full">
+              <ProductReview productId={productId} />
+            </div>
           )}
         </div>
       </div>
+
+      {/* ================= AI FREQUENTLY BOUGHT TOGETHER ================= */}
+      <AIFrequentlyBoughtTogether productId={productId} />
 
       {/* ================= RELATED PRODUCTS ================= */}
       <RelatedProducts

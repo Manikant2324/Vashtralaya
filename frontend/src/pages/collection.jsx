@@ -3,7 +3,7 @@ import { ShopContext } from '../context/ShopContext'
 import { assets } from "../assets/frontend-assests/assets";
 import Title from '../components/Title'
 import Productitems from '../components/Productitems'
-
+import AISmartSearchBar from '../components/AISmartSearchBar'
 
 const Collection = () => {
 
@@ -77,9 +77,9 @@ const Collection = () => {
 
   return (
     <>
-     
+      <AISmartSearchBar onSearchResults={(aiResults) => setFilterProducts(aiResults)} />
 
-      <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
+      <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-4 border-t">
 
         {/* Filters */}
         <div className="min-w-60">
@@ -154,6 +154,7 @@ const Collection = () => {
                 name={item.name}
                 image={item.image}
                 price={item.price}
+                stock={item.stock}
               />
             ))}
           </div>

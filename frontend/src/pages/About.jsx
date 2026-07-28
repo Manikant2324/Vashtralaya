@@ -21,7 +21,7 @@ const About = () => {
 
         <div className="flex flex-col justify-center gap-6 md:w-2/4 text-gray-600">
           <p>
-            Forever was born out of a passion for innovation and a desire to
+            Vashtralaya was born out of a passion for innovation and a desire to
             revolutionize the way people shop online.
           </p>
           <p>
@@ -31,7 +31,7 @@ const About = () => {
           </p>
           <b className="text-gray-800">Our Mission</b>
           <p>
-            Our mission at Forever is to empower customers with choice,
+            Our mission at Vashtralaya is to empower customers with choice,
             convenience, and confidence while shopping online.
           </p>
         </div>

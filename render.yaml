@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: vashtralaya-unified
+    env: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false

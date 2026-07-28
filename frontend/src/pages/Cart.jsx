@@ -64,7 +64,7 @@ const Cart = () => {
                 <img
                   src={product.image[0]}
                   alt={product.name}
-                  className="w-16 sm:w-20"
+                  className="w-16 h-20 sm:w-20 sm:h-24 aspect-[3/4] object-cover object-top rounded-md border"
                 />
 
                 <div>

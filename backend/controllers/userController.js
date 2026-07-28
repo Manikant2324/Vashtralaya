@@ -2,6 +2,8 @@ import validator from 'validator';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import userModel from '../models/userModel.js';
+import productModel from '../models/productModel.js';
+import mongoose from 'mongoose';
 
 
 const createToken = (id) => {
@@ -100,7 +102,7 @@ const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            const token = jwt.sign(email + password, process.env.JWT_SECRET);
+            const token = jwt.sign({ admin: true, email }, process.env.JWT_SECRET);
             res.json({ success: true, token });
         } else {
             res.json({ success: false, message: 'Invalid credentials' });
@@ -111,6 +113,112 @@ const adminLogin = async (req, res) => {
     }
 }
 
+// Get user cart
+const getUserCart = async (req, res) => {
+    try {
+        const userId = req.userId || req.body.userId;
+        if (!userId) {
+            return res.json({ success: false, message: "User authentication required" });
+        }
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.json({ success: false, message: "User not found" });
+        }
+        res.json({ success: true, cartData: user.cartData || {} });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
 
+// Add to cart with backend stock check
+const addToCart = async (req, res) => {
+    try {
+        const userId = req.userId || req.body.userId;
+        const { productId, size } = req.body;
 
-export {  registerUser, loginUser, adminLogin };
+        if (!userId) {
+            return res.json({ success: false, message: "User authentication required" });
+        }
+
+        if (!productId || !size) {
+            return res.json({ success: false, message: "Product ID and size are required" });
+        }
+
+        let product = null;
+        if (productId && mongoose.Types.ObjectId.isValid(productId)) {
+            product = await productModel.findById(productId);
+        }
+
+        if (!product) {
+            product = await productModel.findOne({});
+        }
+
+        if (!product) {
+            return res.json({ success: false, message: "Product not found" });
+        }
+
+        if (product.stock !== undefined && product.stock <= 0) {
+            return res.json({ success: false, message: "Sorry, this product is currently Out of Stock" });
+        }
+
+        const user = await userModel.findById(userId);
+        let cartData = user.cartData || {};
+
+        if (!cartData[productId]) {
+            cartData[productId] = {};
+        }
+
+        const currentQty = cartData[productId][size] || 0;
+        if (currentQty + 1 > product.stock) {
+            return res.json({ 
+                success: false, 
+                message: `Cannot add more than available stock (${product.stock} items available)` 
+            });
+        }
+
+        cartData[productId][size] = currentQty + 1;
+
+        await userModel.findByIdAndUpdate(userId, { cartData });
+        res.json({ success: true, message: "Added to Cart" });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// Update cart
+const updateCart = async (req, res) => {
+    try {
+        const userId = req.userId || req.body.userId;
+        const { cartData } = req.body;
+
+        if (!userId) {
+            return res.json({ success: false, message: "User authentication required" });
+        }
+
+        await userModel.findByIdAndUpdate(userId, { cartData });
+        res.json({ success: true, message: "Cart Updated" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// Get user profile
+const getUserProfile = async (req, res) => {
+    try {
+        const userId = req.userId || req.body.userId;
+        if (!userId) {
+            return res.json({ success: false, message: "User authentication required" });
+        }
+        const user = await userModel.findById(userId, { password: 0 });
+        res.json({ success: true, user });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export { registerUser, loginUser, adminLogin, getUserCart, addToCart, updateCart, getUserProfile };

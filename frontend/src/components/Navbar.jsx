@@ -29,18 +29,18 @@ function Navbar() {
         <div className="flex items-center justify-between py-0 px-0 font-medium max-w-[1400px] mx-auto">
 
           {/* LOGO */}
-          <Link to="/" className="flex items-center group">
+          <Link to="/" className="flex items-center group py-1 overflow-visible">
             <img
-              src={assets.hello}
+              src={assets.logo}
               alt="VASHTRALAYA"
-              className="w-58 sm:w-44 md:w-52 object-contain
+              className="h-16 sm:h-20 md:h-24 w-auto object-contain max-w-none transform sm:scale-125 origin-left
                          transition-transform duration-300
-                         group-hover:scale-105 cursor-pointer"
+                         group-hover:scale-130 cursor-pointer"
             />
           </Link>
 
           {/* DESKTOP MENU */}
-          <ul className="hidden sm:flex gap-6 text-sm text-gray-700">
+          <ul className="hidden sm:flex gap-6 text-sm text-gray-700 items-center">
             {["/", "/collection", "/about", "/contact"].map((path, i) => (
               <NavLink
                 key={i}
@@ -55,6 +55,12 @@ function Navbar() {
                 <hr className="w-0 h-[2px] bg-black border-none transition-all duration-300 group-hover:w-full" />
               </NavLink>
             ))}
+            <NavLink
+              to="/admin"
+              className="flex items-center gap-1 bg-black text-white px-3.5 py-1.5 rounded-full text-xs font-bold hover:bg-gray-800 transition tracking-wider shadow-xs ml-2"
+            >
+              ADMIN PANEL
+            </NavLink>
           </ul>
 
           {/* RIGHT ICONS */}
@@ -79,7 +85,12 @@ function Navbar() {
               {token && (
                 <div className="hidden group-hover:block absolute right-0 pt-4">
                   <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded shadow">
-                    <p className="cursor-pointer hover:text-black">My Profile</p>
+                    <p
+                      onClick={() => navigate("/profile")}
+                      className="cursor-pointer hover:text-black"
+                    >
+                      My Profile
+                    </p>
                     <p
                       onClick={() => navigate("/orders")}
                       className="cursor-pointer hover:text-black"
@@ -139,16 +150,23 @@ function Navbar() {
             <p>Back</p>
           </div>
 
-          {["/", "/collection", "/about", "/contact"].map((path, i) => (
+          {["/", "/collection", "/about", "/contact", "/admin"].map((path, i) => (
             <NavLink
               key={i}
               onClick={() => setVisible(false)}
-              className="py-3 pl-6 border-b"
+              className="py-3 pl-6 border-b flex items-center justify-between"
               to={path}
             >
-              {path === "/"
-                ? "Home"
-                : path.replace("/", "").toUpperCase()}
+              <span>
+                {path === "/"
+                  ? "HOME"
+                  : path.replace("/", "").toUpperCase()}
+              </span>
+              {path === "/admin" && (
+                <span className="mr-6 bg-black text-white text-[10px] px-2 py-0.5 rounded font-bold">
+                  PORTAL
+                </span>
+              )}
             </NavLink>
           ))}
         </div>

@@ -32,11 +32,10 @@ const Login = ({ setToken }) => {
   return (
     <div className="min-h-screen flex items-center justify-center w-full">
       <div className="bg-white shadow-md rounded-lg px-8 py-6 max-w-md">
-        {/* Logo/Image */}
         <img
           src={assets.logo}
-          alt="Admin Logo"
-          className="mx-auto mb-1 w-50 h-15 object-contain "
+          alt="Vashtralaya Admin Logo"
+          className="mx-auto mb-3 w-64 h-auto max-h-24 object-contain"
         />
 
         <h1 className="text-2xl font-bold mb-4 text-center">Admin Panel</h1>

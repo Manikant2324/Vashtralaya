@@ -5,7 +5,7 @@ import { FiLogOut } from "react-icons/fi"; // logout icon
 const Navbar = ({ setToken }) => {
   return (
     <div className="flex items-center py-2 px-[4%] justify-between">
-      <img className="w-[max(10%,80px)]" src={assets.logo} alt="admin_logo" />
+      <img className="h-14 sm:h-18 md:h-20 w-auto object-contain transform sm:scale-125 origin-left cursor-pointer" src={assets.logo} alt="Vashtralaya Admin Logo" />
 
       <button
         onClick={() => setToken("")}

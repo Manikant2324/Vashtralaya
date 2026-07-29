@@ -7,9 +7,21 @@ export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
 
-  const currency = "₹";
-  const delivery_fee = 10;
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:4000' : '');
+  const getBackendUrl = () => {
+    const envUrl = import.meta.env.VITE_BACKEND_URL;
+    if (envUrl && envUrl.trim() !== '' && envUrl !== 'http://localhost:4000' && envUrl !== 'http://localhost:4000/') {
+      return envUrl.replace(/\/+$/, '');
+    }
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:4000';
+      }
+      return '';
+    }
+    return '';
+  };
+  const backendUrl = getBackendUrl();
 
   const [productsList, setProductsList] = useState([]);
   const [search, setSearch] = useState("");

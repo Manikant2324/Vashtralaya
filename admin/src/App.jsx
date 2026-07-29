@@ -15,7 +15,21 @@ import Login from "./pages/Login";
 
 
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const getBackendUrl = () => {
+  const envUrl = import.meta.env.VITE_BACKEND_URL;
+  if (envUrl && envUrl.trim() !== '' && envUrl !== 'http://localhost:4000' && envUrl !== 'http://localhost:4000/') {
+    return envUrl.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:4000';
+    }
+    return '';
+  }
+  return '';
+};
+export const backendUrl = getBackendUrl();
 export const currency = '₹';
 
 

@@ -4,6 +4,11 @@
   "description": "Unified Vashtralaya E-Commerce Store with Integrated Frontend, Admin Panel, and Backend",
   "main": "backend/server.js",
   "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "admin"
+  ],
   "scripts": {
     "start": "node backend/server.js",
     "backend": "npm run dev --prefix backend",

@@ -8,13 +8,17 @@ const connectDB = async () => {
     }
 
     const rawMongoUrl = process.env.MONGODB_URL?.trim();
-    const mongoBaseUrl = rawMongoUrl ? rawMongoUrl.replace(/\/+$/, '') : 'mongodb://127.0.0.1:27017';
-    const mongoUri = mongoBaseUrl.endsWith('/ecommerce') ? mongoBaseUrl : `${mongoBaseUrl}/ecommerce`;
+    let mongoUri = rawMongoUrl || 'mongodb://127.0.0.1:27017/ecommerce';
+
+    if (rawMongoUrl && !rawMongoUrl.includes('/ecommerce') && !rawMongoUrl.includes('?')) {
+        mongoUri = `${rawMongoUrl.replace(/\/+$/, '')}/ecommerce`;
+    }
 
     try {
         const db = await mongoose.connect(mongoUri, {
-            serverSelectionTimeoutMS: 5000,
-            socketTimeoutMS: 30000,
+            dbName: 'ecommerce',
+            serverSelectionTimeoutMS: 10000,
+            socketTimeoutMS: 45000,
             family: 4,
             retryWrites: true,
             retryReads: true,

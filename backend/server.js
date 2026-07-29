@@ -64,7 +64,10 @@ app.get('/api/health', (req, res) => {
 const frontendDistPath = path.join(__dirname, '../frontend/dist');
 if (fs.existsSync(frontendDistPath)) {
     app.use(express.static(frontendDistPath));
-    app.use((req, res) => {
+    app.use((req, res, next) => {
+        if (req.path.startsWith('/api')) {
+            return next();
+        }
         res.sendFile(path.join(frontendDistPath, 'index.html'));
     });
 } else {
@@ -79,7 +82,11 @@ app.use((err, req, res, next) => {
     res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
 });
 
-// Start server
-app.listen(port, () => {
-    console.log(`Unified Vashtralaya Server is running on port : ${port}`);
-});
+// Start server (when not running in serverless environment like Vercel)
+if (!process.env.VERCEL) {
+    app.listen(port, () => {
+        console.log(`Unified Vashtralaya Server is running on port : ${port}`);
+    });
+}
+
+export default app;

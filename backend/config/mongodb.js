@@ -19,7 +19,6 @@ const connectDB = async () => {
             dbName: 'ecommerce',
             serverSelectionTimeoutMS: 10000,
             socketTimeoutMS: 45000,
-            family: 4,
             retryWrites: true,
             retryReads: true,
         });

@@ -86,7 +86,7 @@ export const semanticSearch = async (req, res) => {
         });
     } catch (error) {
         console.error('AI Semantic Search Error:', error);
-        return res.status(500).json({ success: false, message: error.message });
+        return res.json({ success: true, products: [], parsedQuery: {} });
     }
 };
 
@@ -95,17 +95,22 @@ export const semanticSearch = async (req, res) => {
 // ==========================================
 export const chatAssistant = async (req, res) => {
     try {
-        const { message } = req.body;
-        if (!message) {
-            return res.json({ success: false, message: 'Message is required' });
+        const { message } = req.body || {};
+        if (!message || typeof message !== 'string') {
+            return res.json({ success: true, reply: "Namaste! 🙏 How can I assist with your fashion choices today?", recommendedProducts: [] });
         }
 
         const lowerMsg = message.toLowerCase().trim();
         let replyText = "";
         let recommendedProducts = [];
 
-        // Fetch all products
-        const allProducts = await productModel.find({});
+        // Fetch all products safely
+        let allProducts = [];
+        try {
+            allProducts = await productModel.find({}).lean() || [];
+        } catch (dbErr) {
+            console.error('DB query error in chatAssistant:', dbErr.message);
+        }
 
         // Whole-word greeting check using Regex boundary \b
         const isPureGreeting = /^\b(hi|hello|hey|namaste|greetings)\b/i.test(lowerMsg) && lowerMsg.split(/\s+/).length <= 3;
@@ -146,7 +151,7 @@ export const chatAssistant = async (req, res) => {
 
         if (itemKeywords.length > 0) {
             const keywordMatched = matched.filter(p => {
-                const text = `${p.name} ${p.description} ${p.subCategory}`.toLowerCase();
+                const text = `${p.name || ''} ${p.description || ''} ${p.subCategory || ''}`.toLowerCase();
                 return itemKeywords.some(kw => text.includes(kw));
             });
             if (keywordMatched.length > 0) matched = keywordMatched;
@@ -177,7 +182,7 @@ export const chatAssistant = async (req, res) => {
             const words = lowerMsg.split(/\s+/).filter(w => w.length > 2);
             matched = matched.map(p => {
                 let score = 0;
-                const text = `${p.name} ${p.description} ${p.category} ${p.subCategory}`.toLowerCase();
+                const text = `${p.name || ''} ${p.description || ''} ${p.category || ''} ${p.subCategory || ''}`.toLowerCase();
                 words.forEach(w => { if (text.includes(w)) score += 2; });
                 return { product: p, score };
             })
@@ -188,7 +193,7 @@ export const chatAssistant = async (req, res) => {
             if (recommendedProducts.length > 0) {
                 replyText = `Here are the best matches for "${message}" from our current Vashtralaya catalog:`;
             } else {
-                replyText = `I found some top-rated options for you! You can specify gender, category, or budget for more tailored suggestions.`;
+                replyText = `I am here to help! You can specify gender (Men/Women/Kids), category, or budget for personalized recommendations.`;
                 recommendedProducts = allProducts.filter(p => p.bestseller).slice(0, 3);
             }
         }
@@ -200,7 +205,11 @@ export const chatAssistant = async (req, res) => {
         });
     } catch (error) {
         console.error('AI Chat Error:', error);
-        return res.status(500).json({ success: false, message: error.message });
+        return res.json({
+            success: true,
+            reply: "Namaste! 🙏 How can I help you find your style today? Ask me about outfit suggestions or sizing!",
+            recommendedProducts: []
+        });
     }
 };
 

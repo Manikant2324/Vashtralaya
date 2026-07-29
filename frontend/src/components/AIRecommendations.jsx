@@ -4,6 +4,7 @@ import { ShopContext } from '../context/ShopContext';
 import Productitems from './Productitems';
 import Title from './Title';
 import { BsStars } from 'react-icons/bs';
+import { ProductSkeleton } from './Loader';
 
 const AIRecommendations = () => {
   const { backendUrl } = useContext(ShopContext);
@@ -28,13 +29,13 @@ const AIRecommendations = () => {
     fetchRecommendations();
   }, [backendUrl]);
 
-  if (loading || recommendations.length === 0) return null;
+  if (!loading && recommendations.length === 0) return null;
 
   return (
     <div className="my-16">
       <div className="text-center py-8 text-3xl">
         <div className="inline-flex items-center gap-2 mb-2 bg-black text-amber-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-xs">
-          <BsStars className="text-sm" /> AI Personalized Picks
+          <BsStars className="text-sm animate-spin-slow" /> AI Personalized Picks
         </div>
         <Title text1={"RECOMMENDED FOR"} text2={"YOU"} />
         <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600">
@@ -42,19 +43,22 @@ const AIRecommendations = () => {
         </p>
       </div>
 
-      {/* Rendering Products */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-        {recommendations.slice(0, 5).map((item) => (
-          <Productitems
-            key={item._id}
-            id={item._id}
-            image={item.image}
-            name={item.name}
-            price={item.price}
-            stock={item.stock}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <ProductSkeleton count={5} />
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+          {recommendations.slice(0, 5).map((item) => (
+            <Productitems
+              key={item._id}
+              id={item._id}
+              image={item.image}
+              name={item.name}
+              price={item.price}
+              stock={item.stock}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

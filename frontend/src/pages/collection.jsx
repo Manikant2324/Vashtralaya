@@ -4,10 +4,11 @@ import { assets } from "../assets/frontend-assests/assets";
 import Title from '../components/Title'
 import Productitems from '../components/Productitems'
 import AISmartSearchBar from '../components/AISmartSearchBar'
+import { ProductSkeleton } from '../components/Loader'
 
 const Collection = () => {
 
-  const { products, search, showSearch } = useContext(ShopContext)
+  const { products, search, showSearch, loading } = useContext(ShopContext)
 
   const [showFilter, setShowFilter] = useState(false)
   const [filterProducts, setFilterProducts] = useState(products)
@@ -146,18 +147,22 @@ const Collection = () => {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-            {filterProducts.map((item) => (
-              <Productitems
-                key={item._id}
-                id={item._id}
-                name={item.name}
-                image={item.image}
-                price={item.price}
-                stock={item.stock}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <ProductSkeleton count={10} />
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+              {filterProducts.map((item) => (
+                <Productitems
+                  key={item._id}
+                  id={item._id}
+                  name={item.name}
+                  image={item.image}
+                  price={item.price}
+                  stock={item.stock}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
       </div>

@@ -27,6 +27,7 @@ const ShopContextProvider = (props) => {
   const backendUrl = getBackendUrl();
 
   const [productsList, setProductsList] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState(() => {
@@ -40,6 +41,7 @@ const ShopContextProvider = (props) => {
   /* ================= FETCH PRODUCTS FROM BACKEND ================= */
   const getProductsData = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(backendUrl + '/api/product/list');
       if (response.data.success && Array.isArray(response.data.products)) {
         const backendProducts = response.data.products;
@@ -68,6 +70,8 @@ const ShopContextProvider = (props) => {
     } catch (error) {
       console.log("Failed to fetch products from backend API:", error);
       setProductsList([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -225,6 +229,7 @@ const ShopContextProvider = (props) => {
 
   const value = {
     products: productsList,
+    loading,
     getProductsData,
     currency,
     delivery_fee,

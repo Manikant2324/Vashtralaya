@@ -4,6 +4,8 @@ import Title from "../components/Title";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+import { PageLoader } from "../components/Loader";
+
 const Profile = () => {
   const { token, backendUrl, navigate } = useContext(ShopContext);
   const [user, setUser] = useState(null);
@@ -45,11 +47,7 @@ const Profile = () => {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-20">
-        <p className="text-center text-gray-600">Loading profile...</p>
-      </div>
-    );
+    return <PageLoader text="Loading Profile Information..." />;
   }
 
   if (!user) {

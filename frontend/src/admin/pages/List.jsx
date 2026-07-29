@@ -3,6 +3,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { ShopContext } from "../../context/ShopContext";
 
+import Spinner from "../../components/Loader";
+
 const List = () => {
   const { adminToken, backendUrl, currency, getProductsData } = useContext(ShopContext);
   const [list, setList] = useState([]);
@@ -131,9 +133,7 @@ const List = () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">
-          <p className="text-sm text-gray-500">Loading catalog items...</p>
-        </div>
+        <Spinner size="lg" text="Loading store catalog items..." />
       ) : list.length === 0 ? (
         <div className="text-center py-12 border rounded-xl bg-white">
           <p className="text-gray-500">No products found in catalog</p>

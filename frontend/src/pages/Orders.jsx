@@ -4,6 +4,8 @@ import Title from "../components/Title";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+import Spinner from "../components/Loader";
+
 const Orders = () => {
   const { products, currency, token, backendUrl, navigate } = useContext(ShopContext);
   const [orders, setOrders] = useState([]);
@@ -88,7 +90,7 @@ const Orders = () => {
         </button>
       </div>
 
-      {loading && <p className="text-center py-8">Loading orders...</p>}
+      {loading && <Spinner size="lg" text="Fetching your order history..." />}
 
       {!loading && !token && (
         <div className="text-center py-12 border rounded-lg bg-gray-50 my-6">

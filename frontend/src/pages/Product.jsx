@@ -9,10 +9,12 @@ import AIFrequentlyBoughtTogether from "../components/AIFrequentlyBoughtTogether
 import { BsStars } from "react-icons/bs";
 import { toast } from "react-toastify";
 
+import { PageLoader } from "../components/Loader";
+
 const Product = () => {
 
   const { productId } = useParams();
-  const { products, currency, addToCart } = useContext(ShopContext);
+  const { products, currency, addToCart, loading } = useContext(ShopContext);
 
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
@@ -30,8 +32,8 @@ const Product = () => {
     }
   }, [productId, products]);
 
-  if (!productData) {
-    return <div className="opacity-0"></div>;
+  if (!productData || loading) {
+    return <PageLoader text="Loading Product Details..." />;
   }
 
   const isInStock = productData.stock !== undefined ? productData.stock > 0 : true;

@@ -63,11 +63,28 @@ app.get('/api/health', (req, res) => {
 // Serve Frontend Static Build files in production / single application deployment
 const frontendDistPath = path.join(__dirname, '../frontend/dist');
 if (fs.existsSync(frontendDistPath)) {
+    // Serve static assets with caching for hashed assets
+    app.use('/assets', express.static(path.join(frontendDistPath, 'assets'), {
+        maxAge: '1y',
+        immutable: true
+    }));
+    
+    // Return 404 for any missing assets under /assets/ to prevent MIME type mismatch errors
+    app.use('/assets/*', (req, res) => {
+        res.status(404).send('Asset not found');
+    });
+
+    // Serve other static root files
     app.use(express.static(frontendDistPath));
+
+    // Fallback SPA routing for index.html with no-cache headers to ensure immediate updates
     app.use((req, res, next) => {
         if (req.path.startsWith('/api')) {
             return next();
         }
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
         res.sendFile(path.join(frontendDistPath, 'index.html'));
     });
 } else {

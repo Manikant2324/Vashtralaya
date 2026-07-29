@@ -6,12 +6,13 @@ const adminAuth = (req, res, next) => {
         if (!token) {
             return res.json({ success: false, message: 'Not Authorized Login Again' });
         }
-        const token_decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const jwtSecret = process.env.JWT_SECRET || 'vashtralaya_jwt_secret_key_2026';
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+        const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+
+        const token_decoded = jwt.verify(token, jwtSecret);
         // Handle both string payload (legacy) and object payload
         const decodedValue = typeof token_decoded === 'object' ? token_decoded.admin : token_decoded;
-        const expectedValue = typeof token_decoded === 'object'
-            ? true
-            : (process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD);
         
         if (typeof token_decoded === 'object') {
             // New format: token_decoded.admin === true
@@ -20,7 +21,7 @@ const adminAuth = (req, res, next) => {
             }
         } else {
             // Legacy format: decoded string equals email+password
-            if (token_decoded !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD) {
+            if (token_decoded !== adminEmail + adminPassword) {
                 return res.json({ success: false, message: 'Not Authorized Login Again' });
             }
         }

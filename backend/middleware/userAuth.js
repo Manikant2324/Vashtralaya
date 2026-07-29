@@ -6,7 +6,8 @@ const userAuth = (req, res, next) => {
         if (!token) {
             return res.json({ success: false, message: 'Not Authorized Login Again' });
         }
-        const token_decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const jwtSecret = process.env.JWT_SECRET || 'vashtralaya_jwt_secret_key_2026';
+        const token_decoded = jwt.verify(token, jwtSecret);
         req.userId = token_decoded.id;
         if (req.body && typeof req.body === 'object') {
             req.body.userId = token_decoded.id;

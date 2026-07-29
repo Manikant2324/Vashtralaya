@@ -7,11 +7,12 @@ const connectDB = async () => {
         return;
     }
 
+    const defaultAtlasUri = 'mongodb+srv://manikant:QWE1245%40%23%24qs@cluster0.bpfv5tq.mongodb.net/ecommerce';
     const rawMongoUrl = process.env.MONGODB_URL?.trim();
-    let mongoUri = rawMongoUrl || 'mongodb://127.0.0.1:27017/ecommerce';
+    let mongoUri = (rawMongoUrl && rawMongoUrl !== '') ? rawMongoUrl : defaultAtlasUri;
 
-    if (rawMongoUrl && !rawMongoUrl.includes('/ecommerce') && !rawMongoUrl.includes('?')) {
-        mongoUri = `${rawMongoUrl.replace(/\/+$/, '')}/ecommerce`;
+    if (mongoUri && !mongoUri.includes('/ecommerce') && !mongoUri.includes('?')) {
+        mongoUri = `${mongoUri.replace(/\/+$/, '')}/ecommerce`;
     }
 
     try {

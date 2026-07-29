@@ -70,7 +70,7 @@ if (fs.existsSync(frontendDistPath)) {
     }));
     
     // Return 404 for any missing assets under /assets/ to prevent MIME type mismatch errors
-    app.use('/assets/*', (req, res) => {
+    app.use('/assets', (req, res) => {
         res.status(404).send('Asset not found');
     });
 

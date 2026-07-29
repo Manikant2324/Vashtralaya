@@ -7,6 +7,9 @@ export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
 
+  const currency = "₹";
+  const delivery_fee = 10;
+
   const getBackendUrl = () => {
     const envUrl = import.meta.env.VITE_BACKEND_URL;
     if (envUrl && envUrl.trim() !== '' && envUrl !== 'http://localhost:4000' && envUrl !== 'http://localhost:4000/') {
